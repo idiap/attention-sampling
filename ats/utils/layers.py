@@ -11,7 +11,7 @@ from . import to_float32
 
 class SampleSoftmax(Layer):
     """Apply softmax to the whole sample not just the last dimension.
-    
+
     Arguments
     ---------
         squeeze_channels: bool, if True then squeeze the channel dimension of
@@ -105,7 +105,7 @@ class TotalReshape(Layer):
         super(TotalReshape, self).__init__(**kwargs)
 
     def compute_output_shape(self, input_shape):
-        return tuple(si if si>0 else None for si in self._shape)
+        return tuple(si if si > 0 else None for si in self._shape)
 
     def call(self, x):
         return K.reshape(x, self._shape)
@@ -120,3 +120,79 @@ class ActivityRegularizer(Layer):
     def call(self, x):
         self.add_loss(self._regularizer(x), x)
         return x
+
+
+class ImageLinearTransform(Layer):
+    """Randomly adjust the brightness/contrast of an image by a*I + b.
+
+    Arguments
+    ---------
+        a: tuple(int, int), sample a for a*I + b uniformly in [a[0], a[1]]
+        b: tuple(int, int), sample b for a*I + b uniformly in [b[0], b[1]]
+        p: float, only perform the transform p percent of the time
+    """
+    def __init__(self, a=(0.8, 1.2), b=(-0.1, 0.1), p=0.8, **kwargs):
+        super(ImageLinearTransform, self).__init__(**kwargs)
+        self._a = a
+        self._b = b
+        self._p = p
+
+    def call(self, x, training=None):
+        # TODO: Move the transform function outside of the call for a more
+        #       testable implementation
+        def transform():
+            s = (K.shape(x)[0], 1, 1, 1)
+            a = K.random_uniform(shape=s, minval=self._a[0], maxval=self._a[1])
+            b = K.random_uniform(shape=s, minval=self._b[0], maxval=self._b[1])
+            m = to_float32(
+                K.random_uniform(shape=s, minval=0, maxval=1) < self._p
+            )
+            a = m*a + 1-m
+            b = m*b
+
+            return a*x + b
+
+        return K.in_train_phase(transform, x, training=training)
+
+
+class ImagePan(Layer):
+    """Pan the image horizontally and/or vertically a random number of
+    pixels.
+
+    Arguments
+    ---------
+        pixels: int, the random pan will be sampled uniformly
+                from [-pixels, pixels]
+        p: float, only perform the panning p percent of the time
+        horizontally: bool, if True perform also horizontal panning
+        vertically: bool, if True perform also vertical panning
+        mode: {"NEAREST", "BILINEAR"} passed to tf.contrib.image.translate
+    """
+    def __init__(self, pixels=100, p=0.8, horizontally=True, vertically=False,
+                 mode="NEAREST", **kwargs):
+        super(ImagePan, self).__init__(**kwargs)
+        self._pixels = pixels
+        self._p = p
+        self._horizontally = horizontally
+        self._vertically = vertically
+        self._mode = mode
+        assert mode in ["NEAREST", "BILINEAR"]
+
+    def call(self, x, training=None):
+        # TODO: Move the transform function outside of the call for a more
+        #       testable implementation
+        def transform():
+            s = (K.shape(x)[0], 2)
+            t = K.random_uniform(s, minval=-self._pixels, maxval=self._pixels)
+            m = to_float32(
+                K.random_uniform(shape=(s[0], 1), minval=0, maxval=1) < self._p
+            )
+            if not self._horizontally:
+                m = m * K.constant([[0, 1]])
+            if not self._vertically:
+                m = m * K.constant([[1, 0]])
+            t = m * t
+
+            return K.tf.contrib.image.translate(x, t, self._mode)
+
+        return K.in_train_phase(transform, x, training=training)
