@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+#
+# Copyright (c) 2019 Idiap Research Institute, http://www.idiap.ch/
+# Written by Angelos Katharopoulos <angelos.katharopoulos@idiap.ch>
+#
+
 """Download the Swedish Traffic Signs dataset and create the Speed Limit Signs
 dataset from and train with attention sampling.
 

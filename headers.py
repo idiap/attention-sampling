@@ -92,7 +92,7 @@ class Header(object):
         if start < 0:
             return header
         end_string = "\n{comment}\n\n".format(comment=comment)
-        end = contents.find(end_string, start) + 4
+        end = contents.find(end_string, start) + len(end_string)
 
         # Fill in the header
         header.start = start

@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+#
+# Copyright (c) 2019 Idiap Research Institute, http://www.idiap.ch/
+# Written by Angelos Katharopoulos <angelos.katharopoulos@idiap.ch>
+#
+
 """Make an artificial large image dataset using MNIST digits"""
 
 import argparse
