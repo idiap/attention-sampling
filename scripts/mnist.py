@@ -100,7 +100,7 @@ def get_model(outputs, width, height, scale, n_patches, patch_size, reg):
                input_shape=shape_low),
         Conv2D(8, kernel_size=3, activation="tanh", padding="same"),
         Conv2D(1, kernel_size=3, padding="same"),
-        SampleSoftmax(squeeze_channels=True)
+        SampleSoftmax(squeeze_channels=True, smooth=1e-5)
     ])
     feature = Sequential([
         Conv2D(32, kernel_size=7, activation="relu", input_shape=shape_high),
@@ -134,9 +134,9 @@ def get_optimizer(args):
     optimizer = args.optimizer
 
     if optimizer == "sgd":
-        return SGD(lr=args.lr, momentum=args.momentum)
+        return SGD(lr=args.lr, momentum=args.momentum, clipnorm=args.clipnorm)
     elif optimizer == "adam":
-        return Adam(lr=args.lr)
+        return Adam(lr=args.lr, clipnorm=args.clipnorm)
 
     raise ValueError("Invalid optimizer {}".format(optimizer))
 
@@ -172,6 +172,13 @@ def main(argv):
         default=0.9,
         help="Choose the momentum for the optimizer"
     )
+    parser.add_argument(
+        "--clipnorm",
+        type=float,
+        default=1,
+        help=("Clip the gradient norm to avoid exploding gradients "
+              "towards the end of convergence")
+    )
 
     parser.add_argument(
         "--patch_size",
@@ -188,7 +195,7 @@ def main(argv):
     parser.add_argument(
         "--regularizer_strength",
         type=float,
-        default=0,
+        default=0.0001,
         help="How strong should the regularization be for the attention"
     )
 
@@ -201,7 +208,7 @@ def main(argv):
     parser.add_argument(
         "--epochs",
         type=int,
-        default=100,
+        default=500,
         help="How many epochs to train for"
     )
 
