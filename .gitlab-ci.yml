@@ -1,41 +1,27 @@
 stages:
     - python_env
-    - build
     - test
 
 python_env:
     stage: python_env
     script:
-        - mkdir tmp/
-        - export TMPDIR=$(pwd)/tmp/
         - virtualenv -p python3 venv3
         - source venv3/bin/activate
         - python -V
         - pip install --upgrade pip
-        - pip install tensorflow
-        - pip install -e .
+        - mkdir tmp
+        # There seems to be a weird bug with 1.14
+        - TMPDIR=tmp/ pip install tensorflow==1.13.1
+        - rm -r tmp
+        - pip install -v .
     artifacts:
         paths:
             - venv3/
-        expire_in: "2 hours"
-
-build_extract_patches:
-    stage: build
-    script:
-        - source venv3/bin/activate
-        - cd ats/ops/extract_patches/
-        - mkdir build
-        - cd build
-        - cmake ..
-        - make
-        - make install
-    artifacts:
-        paths:
-            - ats/ops/extract_patches/libpatches.so
         expire_in: "2 hours"
 
 test:
     stage: test
     script:
         - source venv3/bin/activate
-        - python -m unittest discover -s tests -v
+        - cd tests
+        - python -m unittest discover -v

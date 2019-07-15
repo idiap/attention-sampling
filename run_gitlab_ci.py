@@ -68,5 +68,5 @@ if __name__ == "__main__":
     with open(script_file, "w") as f:
         f.write(script)
 
-    # Execute it by replacing this process with bash
+    # Execute it
     call(["/bin/bash", script_file])

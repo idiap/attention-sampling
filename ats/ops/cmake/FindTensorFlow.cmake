@@ -5,20 +5,34 @@
 # - TENSORFLOW_INCLUDE_DIR
 # - TENSORFLOW_LIB
 
+# Find the include dir first
 execute_process(
     COMMAND python -c "import tensorflow as tf; \
         print(tf.sysconfig.get_include(), end='')"
     OUTPUT_VARIABLE TENSORFLOW_INCLUDE_DIR
 )
+message(STATUS "Found TensorFlow include: " ${TENSORFLOW_INCLUDE_DIR})
+
+# Find the library
 execute_process(
     COMMAND python -c "import tensorflow as tf; \
         print(tf.sysconfig.get_lib(), end='')"
     OUTPUT_VARIABLE TENSORFLOW_LIB_DIR
 )
+execute_process(
+    COMMAND python -c "import tensorflow as tf; \
+    lib = next(f for f in tf.sysconfig.get_link_flags() \
+               if f.startswith('-l')); \
+    print(lib[2:] if lib[2] != ':' else lib[3:], end='')"
+    OUTPUT_VARIABLE TENSORFLOW_LIB_NAME
+)
 find_library(
-    TENSORFLOW_LIB tensorflow_framework
+    TENSORFLOW_LIB ${TENSORFLOW_LIB_NAME}
     PATHS ${TENSORFLOW_LIB_DIR}
 )
+message(STATUS "Found TensorFlow lib: " ${TENSORFLOW_LIB})
+
+# Add the CXX flags
 execute_process(
     COMMAND python -c "import tensorflow as tf; \
         print(' '.join( \
@@ -27,6 +41,7 @@ execute_process(
     OUTPUT_VARIABLE TENSORFLOW_COMPILE_FLAGS
 )
 set(CMAKE_CXX_FLAGS "${TENSORFLOW_COMPILE_FLAGS} ${CMAKE_CXX_FLAGS}")
+message(STATUS "Added TensorFlow flags: " ${TENSORFLOW_COMPILE_FLAGS})
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
