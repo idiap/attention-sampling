@@ -7,13 +7,13 @@ python_env:
     script:
         - virtualenv -p python3 venv3
         - source venv3/bin/activate
+        - mkdir tmp/
+        - export TMPDIR=$(pwd)/tmp
         - python -V
         - pip install --upgrade pip
-        - mkdir tmp
         # There seems to be a weird bug with 1.14
-        - TMPDIR=tmp/ pip install tensorflow==1.13.1
-        - rm -r tmp
-        - pip install -v .
+        - pip install tensorflow==1.13.1
+        - pip install -v -e .
     artifacts:
         paths:
             - venv3/
