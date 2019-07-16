@@ -33,7 +33,7 @@ class TensorflowExtension(Extension, object):
                 cwd=extension_dir
             )
             check_call(
-                ["make", "-j{}".format(cpu_count()-1)],
+                ["make", "-j{}".format(max(cpu_count()-1, 1))],
                 cwd=extension_dir
             )
             check_call(
