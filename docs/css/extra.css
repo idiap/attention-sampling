@@ -1,0 +1,31 @@
+body {
+    counter-reset: figure;
+}
+.fig {
+    counter-increment: figure;
+    clear: both;
+    margin-bottom: 25px;
+}
+.fig > img {
+    float: left;
+    padding: 10px;
+}
+.fig.col-2 > img {
+    width: 50%;
+}
+.fig.col-3 > img {
+    width: 33%;
+}
+.fig.col-4 > img {
+    width: 25%;
+}
+.fig > span {
+    display: block;
+    clear: both;
+    font-size: 85%;
+    font-style: italic;
+}
+.fig > span::before {
+    font-weight: bold;
+    content: "Figure " counter(figure) ": ";
+}
