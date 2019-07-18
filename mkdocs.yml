@@ -9,3 +9,4 @@ markdown_extensions:
     - mdx_math
 nav:
     - Home: index.md
+    - Math and Architecture: attention-sampling.md
