@@ -10,3 +10,4 @@ markdown_extensions:
 nav:
     - Home: index.md
     - Math and Architecture: attention-sampling.md
+    - Keras API: keras-api.md
