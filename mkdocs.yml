@@ -12,4 +12,5 @@ nav:
     - Math and Architecture: attention-sampling.md
     - Keras API: keras-api.md
     - Custom Ops: custom-ops.md
+    - Examples: examples.md
     - Contributing: contributing.md
