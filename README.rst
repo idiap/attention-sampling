@@ -7,30 +7,13 @@ implementation of the methods described in our ICML 2019 publication
 `"Processing Megapixel Images with Deep Attention-Sampling Models"
 <https://arxiv.org/abs/1905.03711>`_.
 
-We plan to update and support this code so stay tuned for more documentation
-and simpler installation via ``pip``.
-
-Installation
-------------
-
-For now one has to install the package in dev mode using pip and then build the
-tensorflow extensions manually using the cmake.
-
-.. code:: shell
-    $ pip install -e .
-    $ cd ats/ops/extract_patches
-    $ mkdir build
-    $ cd build
-    $ cmake -DCMAKE_BUILD_TYPE=Release ..
-    $ make && make install
-    $ cd ../../..
-    $ python -m unittest discover -s tests/
 
 Usage
------
+------
 
-A good example of using the library can be seen in ``scripts/mnist.py``. A
-small outline is given below:
+You can find examples of how to use our library in the provided `scripts
+<https://github.com/idiap/attention-sampling/tree/master/scripts>`_ or a very
+concise one below.
 
 .. code:: python
 
@@ -73,20 +56,26 @@ small outline is given below:
 
     model = Model(inputs=x_high, outputs=y)
 
-You can also run tests on the MNIST artificial task with the following code:
+Dependencies & Installation
+----------------------------
 
-.. code:: shell
+To install the library just run ``pip install attention-sampling``. If you want
+to extend our code clone the repository and install it in development mode.
 
-    $ # First we need to create the dataset, an easy one
-    $ ./scripts/make_mnist.py /path/to/datasetdir --width 500 --height 500 --no_noise --scale 0.2
-    $ # or a much harder one
-    $ ./scripts/make_mnist.py /path/to/datasetdir --width 1500 --height 1500 --scale 0.12
-    $
-    $ # Now we can train a model with attention sampling
-    $ ./scripts/mnist.py /path/to/datasetdir /path/to/outputdir \
-    >       --lr 0.001 --optimizer adam \
-    >       --n_patches 10 --patch_size 32x32 \
-    >       --epochs 200 --batch_size 128
+The dependencies of ``attention-sampling`` are
+
+* TensorFlow
+* C++ tool chain
+* CUDA (optional)
+
+Documentation
+-------------
+
+There exists a dedicated `documentation site <http://attention-sampling.com/>`_
+but you are also encouraged to read the `source code
+<https://github.com/idiap/attention-sampling>` and the `scripts
+<https://github.com/idiap/attention-sampling/tree/master/scripts>`_ to get an
+idea of how the library should be used and extended.
 
 Research
 ---------
