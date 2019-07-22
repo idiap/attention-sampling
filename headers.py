@@ -63,7 +63,8 @@ class Header(object):
             start = f_out.tell()
             f_out.write(new_content)
 
-            # If the file had a header skip it while writing the rest of the data
+            # If the file had a header skip it while writing the rest of the
+            # data
             if self.start > 0:
                 f_out.write(f_in.read(max(0, self.start - f_in.tell())))
                 f_in.seek(max(f_in.tell(), self.stop))
@@ -72,7 +73,6 @@ class Header(object):
         stat = os.stat(filepath)
         os.chmod(filepath+".header", stat.st_mode)
         os.rename(filepath+".header", filepath)
-
 
     @classmethod
     def from_file(cls, filepath):
@@ -128,8 +128,10 @@ def in_directory(directory):
         directory = directory[1:]
     if directory[-1] == path.sep:
         directory = directory[:-1]
+
     def inner(x):
         return path.sep + directory + path.sep in x
+
     return inner
 
 

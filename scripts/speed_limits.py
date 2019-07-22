@@ -41,7 +41,7 @@ from ats.utils.training import Batcher
 
 def check_file(filepath, md5sum):
     """Check a file against an md5 hash value.
-    
+
     Returns
     -------
         True if the file exists and has the given md5 sum False otherwise
@@ -81,7 +81,7 @@ def download_file(url, destination, progress_file=sys.stderr):
 
 def ensure_dataset_exists(directory, tries=1, progress_file=sys.stderr):
     """Ensure that the dataset is downloaded and is correct.
-    
+
     Correctness is checked only against the annotations files.
     """
     set1_url = ("http://www.isy.liu.se/cvl/research/trafficSigns"
@@ -258,7 +258,7 @@ class STS:
 class SpeedLimits(Sequence):
     """Provide a Keras Sequence for the SpeedLimits dataset which is basically
     a filtered version of the STS dataset.
-    
+
     Arguments
     ---------
         directory: str, The directory that the dataset already is or is going
@@ -477,6 +477,7 @@ def get_optimizer(args):
 def get_lr_schedule(args):
     lr = args.lr
     decrease_lr_at = args.decrease_lr_at
+
     def get_lr(epoch):
         if epoch < decrease_lr_at:
             return lr

@@ -94,6 +94,7 @@ def _expected_without_replacement(weights, attention, features):
 
     return F, gradient
 
+
 def expected(attention, features, replace=False, weights=None):
     """Approximate the expectation of all the features under the attention
     distribution (and its gradient) given a sampled set.
@@ -110,6 +111,9 @@ def expected(attention, features, replace=False, weights=None):
     """
     if weights is None:
         weights = K.ones_like(attention) / to_float32(K.shape(attention)[1])
-    E = _expected_with_replacement if replace else _expected_without_replacement
+    E = (
+        _expected_with_replacement if replace
+        else _expected_without_replacement
+    )
 
     return E(weights, attention, features)

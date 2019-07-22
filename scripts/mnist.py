@@ -22,7 +22,8 @@ import numpy as np
 from skimage.io import imsave
 
 from ats.core import attention_sampling
-from ats.utils.layers import L2Normalize, SampleSoftmax, ResizeImages, TotalReshape
+from ats.utils.layers import L2Normalize, SampleSoftmax, ResizeImages, \
+    TotalReshape
 from ats.utils.regularizers import multinomial_entropy
 from ats.utils.training import Batcher
 
@@ -143,7 +144,8 @@ def get_optimizer(args):
 
 def main(argv):
     parser = argparse.ArgumentParser(
-        description="Train a model with attention sampling on the artificial mnist dataset"
+        description=("Train a model with attention sampling on the "
+                     "artificial mnist dataset")
     )
     parser.add_argument(
         "dataset",

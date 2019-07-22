@@ -34,6 +34,10 @@ class MegapixelMNIST:
             self._low = None
             self._high = None
 
+        @property
+        def noise_positions_and_patterns(self):
+            return zip(self._noise_positions, self._noise_patterns)
+
         def _insert_offseted(self, I, x, position, offset):
             part = I[self._get_slice(position, s=x.shape[0], offset=offset)]
             # Outside of our image I
@@ -96,32 +100,33 @@ class MegapixelMNIST:
                 s1 = round(28*scale)
                 s2 = round(28*scale)
                 offset = (0, 0)
-                I = np.zeros((H, W, 1), dtype=np.uint8)
+                low = np.zeros((H, W, 1), dtype=np.uint8)
                 for p, i in zip(self._positions, self._idxs):
-                    I[self._get_slice(p, s1, scale, offset)] = \
-                        (255*self._get_downsampled_img(i, scale)).astype(np.uint8)
+                    low[self._get_slice(p, s1, scale, offset)] = \
+                        255*self._get_downsampled_img(i, scale)
                 if self._dataset._should_add_noise:
-                    for p, i in zip(self._noise_positions, self._noise_patterns):
-                        I[self._get_slice(p, s2, scale, offset)] = \
-                            (255*self._get_downsampled_noise(i, scale)).astype(np.uint8)
-                self._low = I
+                    for p, i in self.noise_positions_and_patterns:
+                        low[self._get_slice(p, s2, scale, offset)] = \
+                            255*self._get_downsampled_noise(i, scale)
+                self._low = low
             return self._low
 
         def high(self):
             if self._high is None:
                 size = self._dataset._H, self._dataset._W
-                I = np.zeros(size + (1,), dtype=np.uint8)
+                high = np.zeros(size + (1,), dtype=np.uint8)
                 for p, i in zip(self._positions, self._idxs):
-                    I[self._get_slice(p)] = \
-                        (self._dataset._images[i]*255).astype(np.uint8)
+                    high[self._get_slice(p)] = \
+                        255*self._dataset._images[i]
                 if self._dataset._should_add_noise:
-                    for p, i in zip(self._noise_positions, self._noise_patterns):
-                        I[self._get_slice(p)] = \
-                            (self._dataset._noise[i]*255).astype(np.uint8)
-                self._high = I
+                    for p, i in self.noise_positions_and_patterns:
+                        high[self._get_slice(p)] = \
+                            255*self._dataset._noise[i]
+                self._high = high
             return self._high
 
-    def __init__(self, N=5000, W=1500, H=1500, scale=0.12, train=True, noise=True, seed=0):
+    def __init__(self, N=5000, W=1500, H=1500, scale=0.12, train=True,
+                 noise=True, seed=0):
         # Load the images
         x, y = mnist.load_data()[0 if train else 1]
         x = x.astype(np.float32) / 255.
@@ -151,7 +156,7 @@ class MegapixelMNIST:
         A = np.zeros((50, 28, 28))
         for i in range(50):
             m = min(27.49, 27.49/angles[i])
-            x = np.linspace(0, m , 56)
+            x = np.linspace(0, m, 56)
             y = angles[i]*x
             A[i, np.round(x).astype(int), np.round(y).astype(int)] = 1.
         B = np.array(A)
@@ -176,8 +181,8 @@ class MegapixelMNIST:
         all_idxs = np.arange(len(y))
         for i in range(N):
             target = int(np.random.rand()*10)
-            positive_idxs = np.random.choice(all_idxs[y==target], 3)
-            neg_idxs = np.random.choice(all_idxs[y!=target], 2)
+            positive_idxs = np.random.choice(all_idxs[y == target], 3)
+            neg_idxs = np.random.choice(all_idxs[y != target], 2)
             nums.append(np.concatenate([positive_idxs, neg_idxs]))
             targets.append(target)
 
@@ -187,7 +192,9 @@ class MegapixelMNIST:
         def overlap(positions, pos):
             if len(positions) == 0:
                 return False
-            distances = np.abs(np.asarray(positions) - np.asarray(pos)[np.newaxis])
+            distances = np.abs(
+                np.asarray(positions) - np.asarray(pos)[np.newaxis]
+            )
             axis_overlap = distances < 28
             return np.logical_and(axis_overlap[:, 0], axis_overlap[:, 1]).any()
 

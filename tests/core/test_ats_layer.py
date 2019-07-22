@@ -66,8 +66,10 @@ class TestBuilder(unittest.TestCase):
 
         self.assertEqual(
             len(model.trainable_weights),
-            len(attention_model.trainable_weights) +
+            (
+                len(attention_model.trainable_weights) +
                 len(feature_model.trainable_weights)
+            )
         )
 
 

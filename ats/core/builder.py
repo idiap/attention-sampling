@@ -168,7 +168,7 @@ class ATSBuilder(object):
 
     def _dim(self, x, dim):
         """Return the size for a specific dimension.
-        
+
         If x is not a tensor then return the size of that dimension as an
         integer. If it is a tensor, return the size as a tensor or integer
         depending on availability.

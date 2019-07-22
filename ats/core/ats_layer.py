@@ -17,7 +17,8 @@ from .expectation import expected
 
 
 class SamplePatches(Layer):
-    """SamplePatches samples from a high resolution image using an attention map.
+    """SamplePatches samples from a high resolution image using an attention
+    map.
 
     The layer expects the following inputs when called `x_low`, `x_high`,
     `attention`. `x_low` corresponds to the low resolution view of the image
@@ -134,7 +135,8 @@ def attention_sampling(attention, feature, patch_size=None, n_patches=10,
         patch_size: Tuple or tensor defining the size of the patches to be
                     extracted. If not given we try to extract it from the input
                     shape of the feature layer.
-        n_patches: int that defines how many patches to extract from each sample
+        n_patches: int that defines how many patches to extract from each
+                   sample
         replace: bool, whether we should sample with replacement or without
         attention_regularizer: A regularizer callable for the attention
                                distribution
@@ -145,7 +147,8 @@ def attention_sampling(attention, feature, patch_size=None, n_patches=10,
     Returns
     -------
         In the spirit of Keras we return a function that expects two tensors
-        and returns three, namely the `expected features`, `attention` and `patches`
+        and returns three, namely the `expected features`, `attention` and
+        `patches`
 
         ([x_low, x_high]) -> [expected_features, attention, patches]
     """
@@ -188,7 +191,10 @@ def attention_sampling(attention, feature, patch_size=None, n_patches=10,
         patch_features = TotalReshape((-1, n_patches, dims))(patch_features)
 
         # Finally we compute the expected features
-        sample_features = Expectation(replace)([patch_features, sampled_attention])
+        sample_features = Expectation(replace)([
+            patch_features,
+            sampled_attention
+        ])
 
         return [sample_features, attention_map, patches]
 

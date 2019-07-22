@@ -38,20 +38,19 @@ class TestBuilder(unittest.TestCase):
             Flatten(),
             Dense(64, activation="relu")
         ])
-        
 
     def test_build(self):
         x_full = Input(shape=self.SHAPE_LARGE)
         x_small = Input(shape=self.SHAPE_SMALL)
 
         result = (ATSBuilder()
-            .from_tensors([x_small, x_full], None)
-            .attention(self._get_attention())
-            .feature(self._get_feature())
-            .patch_size(self.SHAPE_SMALL[:2])
-            .n_patches(10)
-            .sample_without_replacement()
-            .get())
+                  .from_tensors([x_small, x_full], None)
+                  .attention(self._get_attention())
+                  .feature(self._get_feature())
+                  .patch_size(self.SHAPE_SMALL[:2])
+                  .n_patches(10)
+                  .sample_without_replacement()
+                  .get())
 
         f = K.function([x_full, x_small], [result.outputs])
         f([

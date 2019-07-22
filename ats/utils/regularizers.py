@@ -13,7 +13,7 @@ from . import to_float32
 
 class MultinomialEntropy(Regularizer):
     """Increase or decrease the entropy of a multinomial distribution.
-    
+
     Arguments
     ---------
         strength: A float that defines the strength and direction of the

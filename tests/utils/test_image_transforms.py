@@ -23,7 +23,7 @@ class TestImageTransforms(unittest.TestCase):
 
             # In evaluation mode it should not change anything
             p = m.predict(img)
-            self.assertTrue(np.all(p==img))
+            self.assertTrue(np.all(p == img))
 
             # In training mode however the image should be changed and thus the
             # mse loss should be non zero
@@ -42,7 +42,7 @@ class TestImageTransforms(unittest.TestCase):
         ])
         y = m.predict(np.ones((1000, 10, 10, 3)))
         y = y.reshape(1000, -1).sum(axis=-1)
-        y = np.mean(y==300)
+        y = np.mean(y == 300)
         self.assertAlmostEqual(0.5, y, places=1)
 
         # Check the horizontal and vertical work
@@ -80,24 +80,23 @@ class TestImageTransforms(unittest.TestCase):
         ])
         y = m.predict(np.ones((1000, 10, 10, 3)))
         y = y.reshape(1000, -1).sum(axis=-1)
-        y = np.mean(y==300)
+        y = np.mean(y == 300)
         self.assertAlmostEqual(0.5, y, places=1)
 
         # Check that some parameters work
         m = Sequential([
             ImageLinearTransform(p=1, a=(0.8, 0.8), b=(0.1, 0.1),
-                     input_shape=(20, 20, 3))
+                                 input_shape=(20, 20, 3))
         ])
         y = m.predict(np.ones((5, 20, 20, 3)))
         self.assertTrue(np.all(y == 0.9))
         m = Sequential([
             ImageLinearTransform(p=1, a=(0.8, 0.9), b=(0, 0.1),
-                     input_shape=(20, 20, 3))
+                                 input_shape=(20, 20, 3))
         ])
         y = m.predict(np.ones((5, 20, 20, 3)))
         self.assertTrue(np.all(y >= 0.8))
         self.assertTrue(np.all(y <= 1.0))
-
 
 
 if __name__ == "__main__":

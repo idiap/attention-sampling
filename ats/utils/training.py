@@ -62,7 +62,7 @@ class DataTransform(Sequence):
 
     def __getitem__(self, i):
         x, y = self._sequence[i]
-        
+
         return self._transform(x), y
 
     def _transform(self, x):
@@ -73,7 +73,8 @@ class DataTransform(Sequence):
 
 
 class LambdaTransform(DataTransform):
-    """Apply the data transformation defined by the passed in transform function."""
+    """Apply the data transformation defined by the passed in transform
+    function."""
     def __init__(self, sequence, transform_function):
         super(LambdaTransform, self).__init__(sequence)
         self._transform_function = transform_function

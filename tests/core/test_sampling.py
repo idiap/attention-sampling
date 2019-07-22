@@ -42,7 +42,7 @@ class TestSampling(unittest.TestCase):
             [samples, sampled_attention],
             feed_dict={attention: x}
         )
-        self.assertTrue((s==0).all())
+        self.assertTrue((s == 0).all())
 
         samples, sampled_attention = sample(10, attention, (100,),
                                             replace=False)
@@ -96,7 +96,6 @@ class TestSampling(unittest.TestCase):
                 feed_dict={attention: x}
             )
             self.assertEqual(s.shape, (1, 10, 2))
-
 
 
 if __name__ == "__main__":
