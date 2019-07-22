@@ -87,7 +87,8 @@ pip install --user attention-sampling  # --user is obviously optional
 <div class="admonition note">
     <p class="admonition-title">Note</p>
     <p>TensorFlow <= 1.14 requires g++ version 4.8 to guarantee C++ ABI compatibility
-    when building.</p>
+    when building. See the <a href="../installation/">installation
+    instructions</a> for details.</p>
 </div>
 
 ## Research

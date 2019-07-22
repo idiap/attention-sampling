@@ -9,6 +9,7 @@ markdown_extensions:
     - mdx_math
 nav:
     - Home: index.md
+    - Installation: installation.md
     - Math and Architecture: attention-sampling.md
     - Keras API: keras-api.md
     - Custom Ops: custom-ops.md
