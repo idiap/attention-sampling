@@ -1,0 +1,1 @@
+include ats/ops/cmake/*.cmake
