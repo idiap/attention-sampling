@@ -5,6 +5,8 @@
 
 from keras import backend as K
 from keras.engine import Layer
+import tensorflow as tf
+from ats.utils.regularizers import multinomial_entropy
 
 from . import to_float32
 
@@ -55,6 +57,9 @@ class SampleSoftmax(Layer):
 
         return x
 
+    def get_config(self):
+        return {"squeeze_channels": self.squeeze_channels, "smooth": self.smooth}
+
 
 class L2Normalize(Layer):
     """Normalize the passed axis s.t. its L2 norm is 1.
@@ -70,17 +75,21 @@ class L2Normalize(Layer):
     def call(self, x):
         return K.l2_normalize(x, axis=self.axis)
 
+    def get_config(self):
+        return {"axis": self.axis}
+
 
 class ResizeImages(Layer):
     """Create a layer that resizes images for use with attention sampling."""
     def __init__(self, size, mode="bilinear", **kwargs):
         self.size = size
         if mode == "bilinear":
-            self.mode = K.tf.image.ResizeMethod.BILINEAR
+            self.mode = tf.image.ResizeMethod.BILINEAR
         elif mode == "bicubic":
-            self.mode = K.tf.image.ResizeMethod.BICUBIC
+            self.mode = tf.image.ResizeMethod.BICUBIC
         else:
-            raise ValueError("Unsupported resize mode '{}'".format(mode))
+            print("Unsupported resize mode '{}'".format(mode) + "\n Setting mode to default (bilinear).")
+            self.mode = tf.image.ResizeMethod.BILINEAR
         super(ResizeImages, self).__init__(**kwargs)
 
     def compute_output_shape(self, input_shape):
@@ -90,11 +99,14 @@ class ResizeImages(Layer):
             return (input_shape[0], *self.size, input_shape[-1])
 
     def call(self, x):
-        return K.tf.image.resize_images(
+        return tf.image.resize_images(
             x,
             size=self.size,
             method=self.mode
         )
+
+    def get_config(self):
+        return {"size": self.size, "mode": self.mode}
 
 
 class TotalReshape(Layer):
@@ -110,16 +122,22 @@ class TotalReshape(Layer):
     def call(self, x):
         return K.reshape(x, self._shape)
 
+    def get_config(self):
+        return {"shape": self._shape}
+
 
 class ActivityRegularizer(Layer):
     """A layer that can be used to regularize the attention distribution."""
-    def __init__(self, regularizer, **kwargs):
-        self._regularizer = regularizer
+    def __init__(self, reg_str, **kwargs):
+        self.reg_str = reg_str
         super(ActivityRegularizer, self).__init__(**kwargs)
 
     def call(self, x):
-        self.add_loss(self._regularizer(x), x)
+        self.add_loss(multinomial_entropy(self.reg_str)(x), x)
         return x
+
+    def get_config(self):
+        return {"reg_str": self.reg_str}
 
 
 class ImageLinearTransform(Layer):
@@ -153,7 +171,6 @@ class ImageLinearTransform(Layer):
             return a*x + b
 
         return K.in_train_phase(transform, x, training=training)
-
 
 class ImagePan(Layer):
     """Pan the image horizontally and/or vertically a random number of
@@ -193,6 +210,6 @@ class ImagePan(Layer):
                 m = m * K.constant([[1, 0]])
             t = m * t
 
-            return K.tf.contrib.image.translate(x, t, self._mode)
+            return tf.contrib.image.translate(x, t, self._mode)
 
         return K.in_train_phase(transform, x, training=training)
