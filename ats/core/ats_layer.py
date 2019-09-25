@@ -90,6 +90,10 @@ class SamplePatches(Layer):
 
         return [patches, sampled_attention]
 
+    def get_config(self):
+        return {"n_patches": self._n_patches, "patch_size": self._patch_size,
+                "receptive_field": self._receptive_field, "replace": self._replace, "use_logits": self._use_logits}
+
 
 class Expectation(Layer):
     """Expectation averages the features in a way that gradients can be
@@ -116,6 +120,9 @@ class Expectation(Layer):
             features,
             replace=self._replace
         )
+
+    def get_config(self):
+        return {"replace": self._replace}
 
 
 def attention_sampling(attention, feature, patch_size=None, n_patches=10,
