@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     # Collect the commands from the yaml file
     commands = []
-    pipeline = yaml.load(open(".gitlab-ci.yml"))
+    pipeline = yaml.load(open(".gitlab-ci.yml"), Loader=yaml.SafeLoader)
     for stage in pipeline["stages"]:
         for k in pipeline:
             if k in RESERVED_NAMES:
